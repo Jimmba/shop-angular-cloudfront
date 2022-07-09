@@ -73,12 +73,12 @@ Resources:
       Description: A simple example includes a HTTP get method to get all items from mock or a DynamoDB table.
       Policies:
         # Give Create/Read/Update/Delete Permissions to the SampleTable
-#        - DynamoDBCrudPolicy:
-#            TableName: !Ref SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SampleTable
       Environment:
-#        Variables:
+        Variables:
           # Make table name accessible as environment variable from function code during execution
-#          SAMPLE_TABLE: !Ref SampleTable
+          SAMPLE_TABLE: !Ref SampleTable
       Events:
         ExplicitApi: # warning: creates a public endpoint
           Type: HttpApi
@@ -103,12 +103,12 @@ Resources:
       Description: A simple example includes a HTTP get method to get one item by id from mock or a DynamoDB table.
       Policies:
         # Give Create/Read/Update/Delete Permissions to the SampleTable
-#        - DynamoDBCrudPolicy:
-#            TableName: !Ref SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SampleTable
       Environment:
-#        Variables:
+        Variables:
           # Make table name accessible as environment variable from function code during execution
-#          SAMPLE_TABLE: !Ref SampleTable
+          SAMPLE_TABLE: !Ref SampleTable
       Events:
         ExplicitApi: # warning: creates a public endpoint
           Type: HttpApi
@@ -124,45 +124,45 @@ Resources:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
   # This is a Lambda function config associated with the source code: put-item.js
-#  putItemFunction:
-#    Type: AWS::Serverless::Function
-#    Properties:
-  #      Handler: src/handlers/put-item.putItemHandler
-#      Architectures:
-#        - x86_64
-#      Description: A simple example includes a HTTP post method to add one item to a DynamoDB table.
-#      Policies:
-#        # Give Create/Read/Update/Delete Permissions to the SampleTable
-#        - DynamoDBCrudPolicy:
-#            TableName: !Ref SampleTable
-#      Environment:
-#        #Variables:
-#          # Make table name accessible as environment variable from function code during execution
-#          SAMPLE_TABLE: !Ref SampleTable
-#      Events:
-#        ExplicitApi: # warning: creates a public endpoint
-#          Type: HttpApi
-#          Properties:
-#            ApiId: !Ref HttpApi
-#            Method: POST
-#            Path: /products
-#            TimeoutInMillis: 15000
-#            PayloadFormatVersion: "2.0"
-#            RouteSettings:
-#              ThrottlingBurstLimit: 600
+  putItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/put-item.putItemHandler
+      Architectures:
+        - x86_64
+      Description: A simple example includes a HTTP post method to add one item to a DynamoDB table.
+      Policies:
+       # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SampleTable
+      Environment:
+        Variables:
+         # Make table name accessible as environment variable from function code during execution
+          SAMPLE_TABLE: !Ref SampleTable
+      Events:
+        ExplicitApi: # warning: creates a public endpoint
+          Type: HttpApi
+          Properties:
+           ApiId: !Ref HttpApi
+           Method: POST
+           Path: /products
+           TimeoutInMillis: 15000
+           PayloadFormatVersion: "2.0"
+           RouteSettings:
+             ThrottlingBurstLimit: 600
   # Simple syntax to create a DynamoDB table with a single attribute primary key, more in
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable
 
   # DynamoDB table to store item: {id: &lt;ID&gt;, name: &lt;NAME&gt;}
-#  SampleTable:
-#    Type: AWS::Serverless::SimpleTable
-#    Properties:
-#      PrimaryKey:
-#        Name: id
-#        Type: String
-#      ProvisionedThroughput:
-#        ReadCapacityUnits: 2
-#        WriteCapacityUnits: 2
+  SampleTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
 
 Outputs:
   HttpApiUrl:

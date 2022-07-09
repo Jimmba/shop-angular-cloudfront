@@ -1,0 +1,110 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform:
+- AWS::Serverless-2016-10-31
+Description: An Amazon API Gateway HTTP API and an AWS Lambda functions.
+Globals:
+  Function:
+    Runtime: nodejs16.x
+    MemorySize: 128
+    Timeout: 100
+Parameters:
+  AppName:
+    Description: Name of Application
+    Type: String
+    Default: shop-http-api
+  StageName:
+    Description: Name of Http stage
+    Type: String
+    Default: prod
+Resources:
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName:
+        Ref: StageName
+      Tags:
+        Tag: Value
+      AccessLogSettings:
+        DestinationArn:
+          Fn::GetAtt:
+          - AccessLogs
+          - Arn
+        Format: $context.requestId
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 200
+      CorsConfiguration:
+        AllowOrigins:
+        - '*'
+        AllowMethods:
+        - GET
+        - HEAD
+        - OPTIONS
+        - POST
+      StageVariables:
+        StageVar: Value
+      FailOnWarnings: true
+    Metadata:
+      SamResourceId: HttpApi
+  AccessLogs:
+    Type: AWS::Logs::LogGroup
+    Metadata:
+      SamResourceId: AccessLogs
+  getAllProductsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-all-products.getAllItemsHandler
+      Architectures:
+      - x86_64
+      Description: A simple example includes a HTTP get method to get all items from
+        mock or a DynamoDB table.
+      Policies: null
+      Environment: null
+      Events:
+        ExplicitApi:
+          Type: HttpApi
+          Properties:
+            ApiId:
+              Ref: HttpApi
+            Method: GET
+            Path: /products
+            TimeoutInMillis: 15000
+            PayloadFormatVersion: '2.0'
+            RouteSettings:
+              ThrottlingBurstLimit: 600
+      CodeUri: s3://sam-cli-vitali-himzheuski/aaf2d167d574c7351c2060b0d608b72d
+    Metadata:
+      SamResourceId: getAllProductsFunction
+  getByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-product-by-id.getByIdHandler
+      Architectures:
+      - x86_64
+      Description: A simple example includes a HTTP get method to get one item by
+        id from mock or a DynamoDB table.
+      Policies: null
+      Environment: null
+      Events:
+        ExplicitApi:
+          Type: HttpApi
+          Properties:
+            ApiId:
+              Ref: HttpApi
+            Method: GET
+            Path: /products/{id}
+            TimeoutInMillis: 15000
+            PayloadFormatVersion: '2.0'
+            RouteSettings:
+              ThrottlingBurstLimit: 600
+      CodeUri: s3://sam-cli-vitali-himzheuski/aaf2d167d574c7351c2060b0d608b72d
+    Metadata:
+      SamResourceId: getByIdFunction
+Outputs:
+  HttpApiUrl:
+    Description: URL of your API endpoint
+    Value:
+      Fn::Sub: https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${StageName}/
+  HttpApiId:
+    Description: Api id of HttpApi
+    Value:
+      Ref: HttpApi
